@@ -9,3 +9,7 @@ Q+E: air roll left and right
 A+D: turn left and right
 W+S: tilt up and down
 Space+Ctrl: forward and reverse
+
+----------------Assets----------------
+Skybox is from asset store
+Everything else is made by me

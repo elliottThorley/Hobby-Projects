@@ -9,3 +9,7 @@ The gameplay is you must shoot all of the cubes that appear, however, a deadly c
 Tutorial Level Included
 .exe is in builds folder
 No level select, have to beat level to get to next level
+
+----------------Assets----------------
+Gun, city, and movement from asset store
+everything else me
