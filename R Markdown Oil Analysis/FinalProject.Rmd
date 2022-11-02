@@ -1,0 +1,119 @@
+---
+title: "FinalProject"
+author: "Elliott Thorley"
+date: "4/14/2022"
+output: html_document
+---
+
+```{r message=FALSE,warning=FALSE,echo=FALSE}
+#librarys needed
+library(tidyverse)
+library(ggplot2)
+library("readxl")
+library(lubridate)
+
+#read in data
+crudeOil <- read_excel("CrudeOil.xls",sheet=2,skip=2)
+#make name nicer
+names(crudeOil)[2] <- 'USpurchasePrice'
+
+#read in data
+petroleum <- read_excel("Petroleum.xls",sheet=2,skip=2)
+#makes names nicer
+names(petroleum)[5]<-'WeeklyRegularPrice' 
+names(petroleum)[8]<-'WeeklyMidgradePrice' 
+names(petroleum)[11]<-'WeeklyPremiumPrice' 
+```
+
+
+<center>
+## **Price of Oil Analysis**
+</center>
+<hr>
+
+#### **Overview and Motivation  **
+The purpose of this project is to compare the price that a barrel of oil is being bought for with the price the consumer pays per gallon. The data I am using was collected by the US Department of Energy. The reason I decided to explore this topic is because the gas prices are currently the highest they have ever been in my lifetime. Therefore, I wanted to see if this is due to the price of oil per barrel being higher than normal, resulting in the price per gallon being higher, or if this is just gas companies increasing the price of gas without merit.  
+
+#### **Initial Questions  **
+The main question being asked is *Does the current price of gasoline correspond to the price of Oil/gallon?* However, upon further consideration, you must ask yourself more questions than that to find the answer. The price of oil will of course be cheaper than the price of gasoline per gallon or companies would not be making a profit. So the real question is *Is the profit margin of gasoline consistent?* This question can be answered by looking at the history of oil prices and the history of gasoline prices. If we turned the history of these two variables into line graphs, they should have the same general trend if the profit margin has remained constant.  
+
+#### **Exploratory Data Analysis  **
+The first step in answering our question would be to look at the price of **oil per barrel** over time. This can be seen below:  
+
+```{r pressure, echo=FALSE}
+#make graph of price of barrel
+ggplot(data=crudeOil)+geom_line(mapping=aes(x=Date,y=USpurchasePrice),color='#e803fc',size=1.5)+labs(title="Price of a Barrel of Oil Over Time",x="Year",y="Price (USD)")
+```
+  
+We see a large spike in the price around 2008, then a large drop off in 2009. This is quite an identifiable feature so we should see this in the price of gasoline per gallon as well. More importantly, the price of oil is beginning to spike up in 2020 and we see it continuing to rise into the end of 2021. Sadly, the US department of energy has not yet released the data on oil prices in 2022, however, we can expect to see it continue to rise.  
+  
+Now that we have seen the trend history of the price of oil, we need to check the history of the price of petroleum. Petroleum comes in many different forms, so I will be focusing on the main three: all formulation regular, all formulation midgrade, all formulation premium. The price history of these three types of petroleum can be seen below:  
+
+
+```{r part2,message=FALSE,warning=FALSE, echo=FALSE}
+#colors for later use
+colors=c("Regular"='#e803fc',"Midgrade"='#0380fc',"Premium"='#fc0303')
+
+#make graph showing different grades of gasoline
+ggplot(petroleum,aes(x = Date))+
+geom_line(aes(y=WeeklyRegularPrice ,color="Regular"),size=1)+
+geom_line(aes(y=WeeklyMidgradePrice ,color="Midgrade"),size=1)+
+geom_line(aes(y=WeeklyPremiumPrice ,color="Premium"),size=1)+
+labs(title="Price of Different Grades of Gasoline",x="Year",y="Price (USD)",color="Legend")+
+scale_color_manual(values=colors)
+```
+
+  
+As mentioned in the oil history, we do see the spike in petroleum price around 2008, and then a large fall in 2009. Additionally, the two graphs as a whole are almost the exact same pattern. Looking at each graph individually with the human eye is not the most accurate way of comparing this data, so I decided to calculate the average monthly price of petroleum and compare that to the monthly price of an oil barrel. Plotting these together should allow us to speak more confidently about this data.  
+
+```{r part3,message=FALSE,warning=FALSE, echo=FALSE}
+#calculate oil price per gallon by dividing by 42
+crudeOil$gallonPrice=crudeOil[,2]/42
+#isolate month
+petroleum$Month<-month(petroleum$Date)
+#isolate year
+petroleum$Year<-year(petroleum$Date)
+#make variable for later
+petroleumMonthlyAverage=NULL
+#loop through 1992-2021 because outside of this range is unable to be used as data is missing
+for(x in 1992:2021){
+#getting average monthly price of regular petoleum then storing it
+temp=petroleum %>% filter(Year==x) %>% group_by(Month)%>%summarize(mean = mean(WeeklyRegularPrice))
+#rbind is used for appending
+petroleumMonthlyAverage=rbind(petroleumMonthlyAverage,temp)
+}
+#cbind is used for appending
+monthlyPrices=crudeOil %>% select(Date,gallonPrice) %>% filter(year(crudeOil$Date)>1991)
+monthlyPrices=cbind(monthlyPrices,petroleumMonthlyAverage$mean)
+
+#need to be unlisted in order to graph with them
+monthlyPrices$gallonPrice=unlist(monthlyPrices$gallonPrice)
+monthlyPrices$petroleumMonthlyAverage=unlist(monthlyPrices$petroleumMonthlyAverage)
+
+#colors for later use
+colors2=c("Oil Price"='#e803fc',"Petroleum Price"='#0380fc')
+#make graph
+ggplot(monthlyPrices,aes(x = Date))+
+geom_line(aes(y=gallonPrice ,color="Oil Price"),size=1)+
+geom_line(aes(y=petroleumMonthlyAverage ,color="Petroleum Price"),size=1)+
+labs(title="Price of Oil per Gallon vs Price of Petroleum per Gallon",x="Year",y="Price (USD)",color="Legend")+
+scale_color_manual(values=colors2)
+```
+  
+Looking at this graph, we see that the general trends are extremely similar. We can conclude from this discovery that the price of petroleum is not being decided from any outside forces, it is almost surely based on the price per barrel. However, the price of gasoline did not shoot up until 2022, so this just confirms that leading up to 2022, the profit margin on gasoline has remained constant. In order to ensure that the profit margin has remained constant, if we take the price of petroleum per gallon, and subtract the price of oil per gallon, we will see how much they are making. This graph can be seen below:  
+
+```{r part4,message=FALSE,warning=FALSE, echo=FALSE}
+#calculate difference
+monthlyPrices$profit=monthlyPrices[,4]-monthlyPrices[,2]
+#graph differnce
+ggplot(data=monthlyPrices)+geom_line(mapping=aes(x=Date,y=profit),color='#fc0303',size=1.5)+labs(title="Difference Between a Gallon of Oil and a Gallon of Petroleum",x="Year",y="USD")
+```
+  
+Looking at this graph we can see that the amount of money they are profiting per gallon has been increasing over time. Is this increase due to inflation? the cost to transport the oil getting more expensive? or just because they want to make more money. While I do not have the answers to these questions, I feel as though it is still useful information to know that the amount they make per gallon is increasing each year.  
+  
+Finding the answer to the question mentioned above would be a big task, however, I feel that it would be an interesting one. Perhaps in the future I will try to and answer this more concretely, but for now lets look at if it can be accounted to inflation. That graph starts on January 1992 with a profit of 0.6889048. The graph ends on December 2021 with a profit of 1.6267381. This is a 136.1339% increase. Now if we use the [US Bureau of Labor Statistics](https://www.bls.gov/data/inflation_calculator.htm) to see how much a dollar in January 1992 is worth in December 2021, we see the value of a dollar has increase 102%. From this we can say that they have increased their revenue 34.1339% more than the rate of inflation. Again, this could be due to other factors than wanting to make more money, I am just trying to see if it was all due to inflation or not, and we can conclude that it is not.  
+  
+#### **Conclusion  **
+Originally, I started this presentation with the intent to get an answer regarding the price of gas currently in 2022, but due to the government not providing the data needed, we can not speak to 2022. This being said, I still analyzed the data that was provided to me. Through looking at the price of oil per barrel, compared with the price of petroleum per gallon, we can find out how much they are profiting before expenses; but we can assume that expenses would not have increased. Looking at that profit, and considering the inflation rate of the USD, we discovered that they are increasing the price of petroleum more than the inflation rate. So, unless the price of some step in the process of turning oil into petroleum has gotten disproportional more expensive, there is no reason for that extra 34.1339% increase.  
+  
+If I had access to more data, I have no doubt that I would be able to create a stronger argument one way or the other. Using what I have access to, it is irresponsible to claim that there is a final answer. This project is something that would benefit greatly from being revisited in the future, with more data.

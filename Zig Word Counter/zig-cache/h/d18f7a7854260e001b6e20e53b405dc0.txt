@@ -1,0 +1,1 @@
+18381 281474977175611 1641845896307312200 b939f3fd17c6f6db4ec2dfda0e909384 C:\Users\ellio\Downloads\zig-windows-x86_64-0.9.0\zig-windows-x86_64-0.9.0\lib\libc\mingw\lib-common\advapi32.def.in
