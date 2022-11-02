@@ -1,5 +1,3 @@
-Data Sets:
-Crude Oil: Variables: Price per barrel in USD since Jan-1974, Months, collected by US Department of Energy
+Uses R Markdown to generate an HTML document with graphs and analysis from the input Excel files.
 
-Petroleum: Variables: Week, Weekly U.S. All Grades All Formulations Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. All Grades Conventional Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. All Grades Reformulated Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Regular All Formulations Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Regular Conventional Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Regular Reformulated Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Midgrade All Formulations Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Midgrade Conventional Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Midgrade Reformulated Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Premium All Formulations Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Premium Conventional Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. Premium Reformulated Retail Gasoline Prices  (Dollars per Gallon), Weekly U.S. No 2 Diesel Retail Prices  (Dollars per Gallon), Weekly U.S. No 2 Diesel Ultra Low Sulfur (0-15 ppm) Retail Prices  (Dollars per Gallon), Weekly U.S. No 2 Diesel Low Sulfur (15-500 ppm) Retail Prices  (Dollars per Gallon)
-collected by US Department of Energy
+To see result, launch HTML file.
